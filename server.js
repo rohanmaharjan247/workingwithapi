@@ -19,5 +19,5 @@ res.sendFile(path.join(__dirname+'/dist/DictionaryApi/index.html'));
 
 // Start the app by listening on the default Heroku port
 app.listen(port, () =>{
-  console.log("App listening to:", )
+  console.log("App listening to:", port)
 });
