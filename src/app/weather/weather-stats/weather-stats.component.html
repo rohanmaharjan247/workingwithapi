@@ -1,0 +1,204 @@
+<div class="ui centered grid" style="margin-top:25px;">
+  <div class="ten wide column">
+    <div class="ui segment">
+      <div class="ui segment" [class.loading]="loadingAirPollution">
+        <h2 class="ui header">
+          {{this.cityInfo.name}} Air Quality Index
+        </h2>
+        <h4 class="ui horizontal divider header">
+          <!-- <i class="bar chart icon"></i> -->
+          Current AQI
+        </h4>
+        <table class="ui celled table">
+          <thead>
+            <tr>
+              <th>Quality</th>
+              <th>Carbon Monoxide (CO)</th>
+              <th>Nitrogen Oxide (NO)</th>
+              <th>Nitrogen dioxide (NO2)</th>
+              <th>Ozone (O3)</th>
+              <th>Sulphur dioxide (SO2)</th>
+              <th>Ammonia (NH3)</th>
+              <th>Particulates (PM2.5)</th>
+              <th>Particulates (PM10)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="AirQuality">{{airPollutionInfo.airquality}}</td>
+              <td data-label="CO">{{airPollutionInfo.pollutionIndex.co}} μg/m3</td>
+              <td data-label="NO">{{airPollutionInfo.pollutionIndex.no}} μg/m3</td>
+              <td data-label="NO2">{{airPollutionInfo.pollutionIndex.no2}} μg/m3</td>
+              <td data-label="O3">{{airPollutionInfo.pollutionIndex.o3}} μg/m3</td>
+              <td data-label="SO2">{{airPollutionInfo.pollutionIndex.so2}} μg/m3</td>
+              <td data-label="NH3">{{airPollutionInfo.pollutionIndex.nh3}} μg/m3</td>
+              <td data-label="PM25">{{airPollutionInfo.pollutionIndex.pm2_5}} μg/m3</td>
+              <td data-label="PM10">{{airPollutionInfo.pollutionIndex.pm10}} μg/m3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ui segment" [class.loading]="loadingHistoryAP">
+        <h4 class="ui horizontal divider header">
+          {{cityInfo.name}} AQI History (3 days)
+        </h4>
+        <table class="ui celled table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Quality</th>
+              <th>Carbon Monoxide (CO)</th>
+              <th>Nitrogen dioxide (NO2)</th>
+              <th>Ozone (O3)</th>
+              <th>Sulphur dioxide (SO2)</th>
+              <th>Particulates (PM2.5)</th>
+              <th>Particulates (PM10)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let history of historyAP">
+              <td data-label="date">{{history.date | date:'mediumDate'}}</td>
+              <td data-label="quality">{{getColor(history.aqi) | titlecase}}</td>
+              <td data-label="CO">{{history.avgCO | number}} μg/m3</td>
+              <td data-label="NO2">{{history.avgNo2 | number}} μg/m3</td>
+              <td data-label="O3">{{history.avgO3 | number}} μg/m3</td>
+              <td data-label="SO2">{{history.avgSo2 | number}} μg/m3</td>
+              <td data-label="PM25">{{history.avgPm2_5 | number}} μg/m3</td>
+              <td data-label="PM10">{{history.avgPm10 | number}} μg/m3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ui segment" [class.loading]="loadingForecastAP">
+        <h4 class="ui horizontal divider header">
+          {{cityInfo.name}} AQI Forecast (3 days)
+        </h4>
+        <table class="ui celled table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Quality</th>
+              <th>Carbon Monoxide (CO)</th>
+              <th>Nitrogen dioxide (NO2)</th>
+              <th>Ozone (O3)</th>
+              <th>Sulphur dioxide (SO2)</th>
+              <th>Particulates (PM2.5)</th>
+              <th>Particulates (PM10)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let forecast of forecastAP">
+              <td data-label="date">{{forecast.date | date:'mediumDate'}}</td>
+              <td data-label="quality">{{getColor(forecast.aqi) | titlecase}}</td>
+              <td data-label="CO">{{forecast.avgCO | number}} μg/m3</td>
+              <td data-label="NO2">{{forecast.avgNo2 | number}} μg/m3</td>
+              <td data-label="O3">{{forecast.avgO3 | number}} μg/m3</td>
+              <td data-label="SO2">{{forecast.avgSo2 | number}} μg/m3</td>
+              <td data-label="PM25">{{forecast.avgPm2_5 | number}} μg/m3</td>
+              <td data-label="PM10">{{forecast.avgPm10 | number}} μg/m3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+  <div class="four wide column">
+    <div class="ui raized vertical segments">
+      <div class="ui segment" [class.loading]="loadingCurrentWeather">
+        <div class="ui horizontal segments">
+          <div class="ui segment">
+            <ng-container *ngFor="let weather of weathers">
+              <h2 class="ui header">
+                <img [src]="'http://openweathermap.org/img/wn/'+weather.icon+'@2x.png'" class="ui image" />
+                <div class="content">
+                  {{weather.main}}
+                  <div class="sub header">{{weather.description | titlecase}}</div>
+                </div>
+
+              </h2>
+
+            </ng-container>
+          </div>
+          <div class="ui segment">
+            <h2 class="ui header">
+              <i class="thermometer half icon"></i>
+              <div class="content">
+                {{temperature.temp}}&deg; C
+                <div class="sub header">{{hourlyTemperature.temp}}&deg; C @ {{hourlyDate | date: 'hh:mm a'}}</div>
+              </div>
+
+            </h2>
+          </div>
+        </div>
+
+        <!-- <div class="ui horizontal segments">
+
+          <div class="ui segment">
+            <i class="icon thermometer full"></i>
+            <div class="content">{{temperature.temp_max}}&deg; C</div>
+          </div>
+          <div class="ui segment">
+            <i class="icon thermometer empty"></i>
+            <div class="content">
+              {{temperature.temp_min}}&deg; C
+            </div>
+          </div>
+        </div> -->
+      </div>
+      <div class="ui segment" [class.loading]="loadingCurrentWeather">
+        <h2 class="ui header">
+          {{cityInfo.name}}
+        </h2>
+        <h4 class="ui header">
+          Sunrise: {{cityInfo.sunrise | date: 'hh:mm a'}} | Sunset: {{cityInfo.sunset | date: 'hh:mm a'}}
+        </h4>
+        <div>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d56516.27689225424!2d85.29111337616108!3d27.709031933186687!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb198a307baabf%3A0xb5137c1bf18db1ea!2sKathmandu%2044600!5e0!3m2!1sen!2snp!4v1616650666483!5m2!1sen!2snp"
+            style="border:0;width: 100%;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+
+      </div>
+      <div class="ui segment" [class.loading]="loadingDailyForcast">
+        <h2 class="ui header">
+          {{cityInfo.name}} Daily Forecast
+        </h2>
+        <table class="ui very basic collapsing celled table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Weather</th>
+              <th>Information</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let forecast of dailyForecast.daily">
+              <td>
+                {{covertUnixDate(forecast.dt) | date: 'dd MMM'}}
+              </td>
+              <td>
+                <h4 class="ui image header">
+                  <img [src]="'http://openweathermap.org/img/wn/'+forecast.weather[0].icon+'@2x.png'"
+                    class="ui mini rounded image">
+                  <div class="content">
+                    {{forecast.weather[0].main}}
+                    <div class="sub header">{{forecast.weather[0].description | titlecase}}
+                    </div>
+                  </div>
+                </h4>
+              </td>
+              <td>
+                <div class="content">
+                  <i class="thermometer full icon" title="max"></i> {{forecast.temp.max}} &deg; C |  <i class="thermometer empty icon" title="min"></i>{{forecast.temp.min}} &deg; C
+                  <div class="sub header">   <i class="sun icon" title="sunrise"></i> {{covertUnixDate(forecast.dt) | date: 'hh:mm a'}} |  <i class="sun outline icon" title="sunset"></i> {{covertUnixDate(forecast.dt) | date: 'hh:mm a'}}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
