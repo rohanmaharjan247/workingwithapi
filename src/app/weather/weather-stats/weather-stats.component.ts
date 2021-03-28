@@ -1,19 +1,22 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { Airinfo } from '../models/airinfo.model';
 import { Cityinfo } from '../models/cityinfo.model';
 import { Temperature } from '../models/temperature.model';
 import { Weather } from '../models/weather.model';
 import { WeatherService } from '../services/weather.service';
-import { interval } from 'rxjs';
+import { interval, Subject } from 'rxjs';
 import { Avgaqidata } from '../models/avgaqidata.model';
 import { Title } from '@angular/platform-browser';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-weather-stats',
   templateUrl: './weather-stats.component.html',
   styleUrls: ['./weather-stats.component.scss'],
 })
-export class WeatherStatsComponent implements OnInit, AfterViewInit {
+export class WeatherStatsComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly toDestroy$: Subject<boolean> = new Subject<boolean>();
+
   weathers: Weather[];
   temperature: Temperature = new Temperature();
   hourlyTemperature: Temperature = new Temperature();
@@ -28,18 +31,20 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
   loadingHistoryAP = false;
   loadingForecastAP = false;
   loadingDailyForcast = false;
-  dailyForecast:any = {};
-  constructor(private _weatherService: WeatherService, private title:Title) {
+  dailyForecast: any = {};
+  constructor(private _weatherService: WeatherService, private title: Title) {
     this.title.setTitle('Kathmandu Air Quality Index - Working with Apis');
+  }
+  ngOnDestroy(): void {
+    this.toDestroy$.next(true);
+    this.toDestroy$.unsubscribe();
   }
 
   ngOnInit(): void {
     this.getCurrentWeather();
     this.getHourlyWeather();
     interval(1000 * 60 * 60).subscribe((val) => {
-
       this.getHourlyWeather();
-
     });
   }
 
@@ -47,40 +52,47 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
 
   getCurrentWeather() {
     this.loadingCurrentWeather = true;
-    this._weatherService.getCurrentWeather().subscribe((data: any) => {
-      this.cityInfo = new Cityinfo();
-      this.weathers = data.weather;
-      this.temperature = data.main;
-      this.cityInfo.id = data.id;
-      this.cityInfo.name = data.name;
-      this.cityInfo.lat = data.coord.lat;
-      this.cityInfo.lon = data.coord.lon;
-      this.cityInfo.sunrise = new Date(data.sys.sunrise * 1000);
-      this.cityInfo.sunset = new Date(data.sys.sunset * 1000);
-      this.cityInfo.country = data.sys.country;
-      this.loadingCurrentWeather = false;
-      this.getDailyForecast(data.coord.lat, data.coord.lon);
-      this.getCurrentAirPollution(data.coord.lat, data.coord.lon);
-      this.getHistoryAirPollution(data.coord.lat, data.coord.lon);
-      this.getForecastAirPollution(data.coord.lat, data.coord.lon);
-    });
+    this._weatherService
+      .getCurrentWeather()
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.cityInfo = new Cityinfo();
+        this.weathers = data.weather;
+        this.temperature = data.main;
+        this.cityInfo.id = data.id;
+        this.cityInfo.name = data.name;
+        this.cityInfo.lat = data.coord.lat;
+        this.cityInfo.lon = data.coord.lon;
+        this.cityInfo.sunrise = new Date(data.sys.sunrise * 1000);
+        this.cityInfo.sunset = new Date(data.sys.sunset * 1000);
+        this.cityInfo.country = data.sys.country;
+        this.loadingCurrentWeather = false;
+        this.getDailyForecast(data.coord.lat, data.coord.lon);
+        this.getCurrentAirPollution(data.coord.lat, data.coord.lon);
+        this.getHistoryAirPollution(data.coord.lat, data.coord.lon);
+        this.getForecastAirPollution(data.coord.lat, data.coord.lon);
+      });
   }
 
   getHourlyWeather() {
-    this._weatherService.getHourlyWeather().subscribe((data: any) => {
-
-      this.hourlyTemperature = data.main;
-      this.hourlyDate = new Date(data.dt * 1000);
-    });
+    this._weatherService
+      .getHourlyWeather()
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.hourlyTemperature = data.main;
+        this.hourlyDate = new Date(data.dt * 1000);
+      });
   }
 
-  getDailyForecast(lat: number, lon: number){
+  getDailyForecast(lat: number, lon: number) {
     this.loadingDailyForcast = true;
-    this._weatherService.getDailyForecast(lat, lon).subscribe((data:any)=>{
-
-      this.dailyForecast = data;
-      this.loadingDailyForcast = false;
-    })
+    this._weatherService
+      .getDailyForecast(lat, lon)
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.dailyForecast = data;
+        this.loadingDailyForcast = false;
+      });
   }
 
   getCurrentAirPollution(lat: number, lon: number) {
@@ -101,8 +113,8 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
     this.loadingForecastAP = true;
     this._weatherService
       .getForecastAirPollution(lat, lon)
+      .pipe(takeUntil(this.toDestroy$))
       .subscribe((data: any) => {
-
         let forecastArr = data.list;
         forecastArr.forEach((forecast) => {
           this.forecastAirPollution.push({
@@ -124,8 +136,8 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
     const end = this.threeDaysAgo();
     this._weatherService
       .getHistoryAirPollution(lat, lon, start, end)
+      .pipe(takeUntil(this.toDestroy$))
       .subscribe((data: any) => {
-
         let forecastArr = data.list;
         forecastArr.forEach((forecast) => {
           this.forecastAirPollution.push({
@@ -141,7 +153,7 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
   }
 
   private calculateAQI(apData: Airinfo[], isHistory: boolean) {
-    let dateArr:Date[] = [];
+    let dateArr: Date[] = [];
     if (isHistory) dateArr = this.getDateForHistory();
     else dateArr = this.getDateForForecast();
     let historicalAQIData: Avgaqidata[] = [];
@@ -235,7 +247,7 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
     return returnDate;
   }
 
-  private getDateForForecast(){
+  private getDateForForecast() {
     let forecastDate = new Date();
     let returnDate: Date[] = [];
     for (let i = 1; i <= 3; i++) {
@@ -296,7 +308,7 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
     return aq;
   }
 
-  public covertUnixDate(unixDate:number){
+  public covertUnixDate(unixDate: number) {
     return new Date(unixDate * 1000);
   }
 }

@@ -1,19 +1,22 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { CookieService } from 'ngx-cookie-service';
+import { Subject } from 'rxjs';
 import { SpotifyService } from '../services/spotify.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
+  private readonly toDestroy$: Subject<boolean> = new Subject<boolean>();
   isAuthorized = false;
 
-  profile:any = {};
+  profile: any = {};
   playlists: any = [];
 
   @ViewChild('spotifyLogin') spotifyLogin: ElementRef;
@@ -32,48 +35,59 @@ export class ProfileComponent implements OnInit {
       this.isAuthorized = params.isAuthorized;
     });
   }
+  ngOnDestroy(): void {
+    this.toDestroy$.next(true);
+    this.toDestroy$.unsubscribe();
+  }
 
   ngOnInit(): void {
-    if (!this.isAuthorized){
+    if (!this.isAuthorized) {
       this.authorize();
-    }
-    else{
+    } else {
       this.getSpotifyProfile();
       this.getSpotifyPlaylists();
     }
   }
 
   getSpotifyProfile() {
-    if(this.isAuthorized)
-    this._spotifyService.getSpotifyProfile().subscribe((data: any) => {
-      this.profile = data;
-    });
-    else{
+    if (this.isAuthorized)
+      this._spotifyService
+        .getSpotifyProfile()
+        .pipe(takeUntil(this.toDestroy$))
+        .subscribe((data: any) => {
+          this.profile = data;
+        });
+    else {
       this.authorize();
-      alert('Please login to get spotify profile')
+      alert('Please login to get spotify profile');
     }
   }
 
-  getSpotifyPlaylists(){
-    if(this.isAuthorized){
-      this._spotifyService.getSpotifyPlaylists().subscribe((data:any)=>{
-        console.log('playlist', data);
-        this.playlists = data.items;
-      })
-    }
-    else{
+  getSpotifyPlaylists() {
+    if (this.isAuthorized) {
+      this._spotifyService
+        .getSpotifyPlaylists()
+        .pipe(takeUntil(this.toDestroy$))
+        .subscribe((data: any) => {
+          console.log('playlist', data);
+          this.playlists = data.items;
+        });
+    } else {
       this.authorize();
-      alert('Please login to get spotify profile')
+      alert('Please login to get spotify profile');
     }
   }
 
   authorize() {
-    this._spotifyService.getSpotifyAuth().subscribe((data: any) => {
-      console.log(data);
-      this.spotifyLogin.nativeElement.href = data;
-     // this.spotifyLogin.nativeElement.click();
-      //  this.getSpotifyProfile();
-    });
+    this._spotifyService
+      .getSpotifyAuth()
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        console.log(data);
+        this.spotifyLogin.nativeElement.href = data;
+        // this.spotifyLogin.nativeElement.click();
+        //  this.getSpotifyProfile();
+      });
     //this.oauthService.initLoginFlow();
   }
 }
