@@ -6,6 +6,7 @@ import { Weather } from '../models/weather.model';
 import { WeatherService } from '../services/weather.service';
 import { interval } from 'rxjs';
 import { Avgaqidata } from '../models/avgaqidata.model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-weather-stats',
@@ -27,8 +28,10 @@ export class WeatherStatsComponent implements OnInit, AfterViewInit {
   loadingHistoryAP = false;
   loadingForecastAP = false;
   loadingDailyForcast = false;
-  dailyForecast:any;
-  constructor(private _weatherService: WeatherService) {}
+  dailyForecast:any = {};
+  constructor(private _weatherService: WeatherService, private title:Title) {
+    this.title.setTitle('Kathmandu Air Quality Index - Working with Apis');
+  }
 
   ngOnInit(): void {
     this.getCurrentWeather();

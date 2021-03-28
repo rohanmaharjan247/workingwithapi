@@ -1,0 +1,28 @@
+<div class="ui centered grid" style="margin-top:25px;">
+  <div class="ten wide column">
+    <div class="ui segment">
+      Playlist
+      <ng-container *ngFor="let playlist of playlists">
+        <div>
+          {{playlist.name}} {{playlist.tracks.total}}
+          <img [src]="playlist.images[1].url">
+          <a [href]="playlist.external_urls.spotify" target="_blank">Open in Web</a>
+          <a [href]="playlist.uri | sanitizer: 'resourceurl'">Open in Desktop App</a>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="four wide column">
+    <div class="ui segment">
+      profile
+      <ng-container *ngIf="(profile | json) != '{}'">
+        {{profile.display_name}} {{profile.country}} {{profile.followers.total}}
+        <img [src]="profile.images[0].url">
+        <a [href]="profile.external_urls.spotify" target="_blank">Open in Web</a>
+        <a [href]="profile.uri| sanitizer: 'resourceurl'">Open in Desktop App</a>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<a href="javascript:;" #spotifyLogin>Spotify</a>
