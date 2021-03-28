@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'spotify', pathMatch: 'full' },
+  { path: '', redirectTo: 'pagenotfound', pathMatch: 'full' },
   {
     path: 'weather',
     loadChildren: () =>
@@ -13,6 +14,10 @@ const routes: Routes = [
     loadChildren: () =>
       import('./spotifyapi/spotifyapi.module').then((m) => m.SpotifyapiModule),
   },
+  {
+    path: 'pagenotfound',
+    component: PagenotfoundComponent
+  }
 ];
 
 @NgModule({
