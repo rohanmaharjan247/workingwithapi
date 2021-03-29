@@ -113,8 +113,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       .getSpotifyAuth()
       .pipe(takeUntil(this.toDestroy$))
       .subscribe((data: any) => {
-
-        this.spotifyLogin.nativeElement.href = data;
+        this.spotifyLogin.nativeElement.href = data.link;
         // this.spotifyLogin.nativeElement.click();
         //  this.getSpotifyProfile();
       });

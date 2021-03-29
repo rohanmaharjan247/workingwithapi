@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 import { SpotifyService } from '../services/spotify.service';
 
 @Component({
@@ -27,9 +28,7 @@ export class CallbackComponent implements OnInit {
 
   callback() {
     this._spotifyService.callback(this.code, this.state).subscribe((data: any) => {
-      console.log('callback', data);
       if (data.result) {
-        //SpotifyService.ACCESSTOKEN = data.message;
         localStorage.setItem('access_token', data.message);
         this.router.navigate(['/spotify/profile'], {
           queryParams: { isAuthorized: data.result },
