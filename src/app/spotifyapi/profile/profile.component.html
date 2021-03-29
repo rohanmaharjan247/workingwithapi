@@ -1,28 +1,104 @@
-<div class="ui centered grid" style="margin-top:25px;">
-  <div class="ten wide column">
-    <div class="ui segment">
-      Playlist
-      <ng-container *ngFor="let playlist of playlists">
-        <div>
-          {{playlist.name}} {{playlist.tracks.total}}
-          <img [src]="playlist.images[1].url">
-          <a [href]="playlist.external_urls.spotify" target="_blank">Open in Web</a>
-          <a [href]="playlist.uri | sanitizer: 'resourceurl'">Open in Desktop App</a>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-  <div class="four wide column">
-    <div class="ui segment">
-      profile
-      <ng-container *ngIf="(profile | json) != '{}'">
-        {{profile.display_name}} {{profile.country}} {{profile.followers.total}}
-        <img [src]="profile.images[0].url">
-        <a [href]="profile.external_urls.spotify" target="_blank">Open in Web</a>
-        <a [href]="profile.uri| sanitizer: 'resourceurl'">Open in Desktop App</a>
-      </ng-container>
-    </div>
-  </div>
-</div>
+<ng-container *ngIf="isAuthorized">
+  <div class="ui centered grid" style="margin-top:25px;">
+    <div class="ten wide column">
+      <div class="ui segment">
+        <ng-container *ngIf="(userPlaylist | json) != '{}'">
+          <h2 class="ui header">
+            <img [src]="userPlaylist.images[0].url">
+            <div class="content">
+              {{userPlaylist.name}}
+              <div class="sub header">Created By: {{userPlaylist.owner.display_name}} | {{userPlaylist.tracks.total}} songs | <a [href]="userPlaylist.external_urls.spotify"
+                target="_blank" title="Open in Web"><i class="globe icon"></i></a>
+              <a [href]="userPlaylist.uri | sanitizer: 'resourceurl'" title="Open in Desktop App"><i
+                  class="desktop icon"></i></a>
+              </div>
+            </div>
+          </h2>
+          <div class="ui list">
+            <ng-container *ngFor="let tracks of userPlaylist.tracks.items">
+              <a class="item">
+                <i class="right triangle icon"></i>
+                <div class="content">
+                  <div class="header">{{tracks.track.name}}</div>
+                  <div class="description">
+                    {{tracks.track.artists[0].name}}
+                    <ng-container *ngFor="let artist of tracks.track.artists.slice(1);let i = index">
+                      (Feat. {{tracks.track.artists[i+1].name}})
+                    </ng-container>
+                    - {{millisTominutes(tracks.track.duration_ms)}}</div>
+                </div>
+              </a>
+            </ng-container>
 
-<a href="javascript:;" #spotifyLogin>Spotify</a>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+    <div class="three wide column">
+      <div class="ui segments">
+        <div class="ui segment">
+          <ng-container *ngIf="(profile | json) != '{}'">
+            <div class="card">
+              <div class="content">
+                <img class="right floated mini ui image" [src]="profile.images[0].url">
+                <div class="header">
+                  {{profile.display_name}}
+                </div>
+                <div class="meta">
+                  <i [class]="profile.country.toLowerCase()+ ' flag'"></i> Followers: {{profile.followers.total}}
+                </div>
+                <!-- <div class="description">
+                  Elliot requested permission to view your contact details
+                </div> -->
+              </div>
+              <div class="extra content">
+                <div class="ui two buttons">
+                  <a [href]="profile.external_urls.spotify" target="_blank" class="ui basic green button">Open in Web</a>
+                  <a [href]="profile.uri| sanitizer: 'resourceurl'" class="ui basic green button">Open in Desktop</a>
+                  <!-- <div class="ui basic green button">Approve</div>
+                  <div class="ui basic red button">Decline</div> -->
+                </div>
+              </div>
+            </div>
+
+            <!-- <img [src]="profile.images[0].url">
+            <a [href]="profile.external_urls.spotify" target="_blank">Open in Web</a>
+            <a [href]="profile.uri| sanitizer: 'resourceurl'">Open in Desktop App</a> -->
+          </ng-container>
+        </div>
+        <div class="ui segment">
+          <h2 class="ui header">
+            User Playlists
+          </h2>
+          <div class="ui list">
+            <ng-container *ngFor="let playlist of playlists">
+              <div class="item">
+                <img class="ui avatar image" [src]="playlist.images[1].url">
+                <div class="content">
+                  <a class="header" href="javascript:;" (click)="getPlaylistById(playlist.id)">{{playlist.name}}</a>
+                  <div class="description"> {{playlist.tracks.total}} Tracks <a [href]="playlist.external_urls.spotify"
+                      target="_blank" title="Open in Web"><i class="globe icon"></i></a>
+                    <a [href]="playlist.uri | sanitizer: 'resourceurl'" title="Open in Desktop App"><i
+                        class="desktop icon"></i></a>
+                  </div>
+                </div>
+              </div>
+              <div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!isAuthorized">
+  <div class="ui centered grid" style="margin-top:25px;">
+    <div class="twelve wide column">
+      <a href="javascript:;" #spotifyLogin *ngIf="!isAuthorized" class="ui basic green button">Login with Spotify</a>
+    </div>
+  </div>
+
+</ng-container>
+

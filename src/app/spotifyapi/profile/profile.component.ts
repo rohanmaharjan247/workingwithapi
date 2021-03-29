@@ -1,4 +1,10 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -18,6 +24,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   profile: any = {};
   playlists: any = [];
+  userPlaylist: any = {};
+  userId = '';
 
   @ViewChild('spotifyLogin') spotifyLogin: ElementRef;
 
@@ -31,7 +39,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ) {
     this.title.setTitle('Spotify Profile -  Working with APIs');
     this.avRouter.queryParams.subscribe((params) => {
-      console.log(params);
       this.isAuthorized = params.isAuthorized;
     });
   }
@@ -69,7 +76,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         .getSpotifyPlaylists()
         .pipe(takeUntil(this.toDestroy$))
         .subscribe((data: any) => {
-          console.log('playlist', data);
+
           this.playlists = data.items;
         });
     } else {
@@ -78,16 +85,46 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
+  getPlaylistById(playlistId: string) {
+    if (this.isAuthorized) {
+      this._spotifyService
+        .getSpotifyPlaylist(playlistId)
+        .pipe(takeUntil(this.toDestroy$))
+        .subscribe((data: any) => {
+
+          this.userPlaylist = data;
+        });
+    }
+  }
+
+  getUserPlaylist() {
+    if (this.isAuthorized && this.userId != '') {
+      this._spotifyService
+        .getUserPlaylists(this.userId)
+        .pipe(takeUntil(this.toDestroy$))
+        .subscribe((data) => {
+
+        });
+    }
+  }
+
   authorize() {
     this._spotifyService
       .getSpotifyAuth()
       .pipe(takeUntil(this.toDestroy$))
       .subscribe((data: any) => {
-        console.log(data);
+
         this.spotifyLogin.nativeElement.href = data;
         // this.spotifyLogin.nativeElement.click();
         //  this.getSpotifyProfile();
       });
     //this.oauthService.initLoginFlow();
+  }
+
+  millisTominutes = (millis) =>{
+    var minutes = Math.floor(millis / 60000);
+    var seconds = Number(((millis%60000)/1000).toFixed(0));
+
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
 }
