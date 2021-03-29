@@ -12,6 +12,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { Subject } from 'rxjs';
 import { SpotifyService } from '../services/spotify.service';
 import { takeUntil } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
@@ -26,7 +27,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
   playlists: any = [];
   userPlaylist: any = {};
   userId = '';
+  userTopArtist: any = [];
+  userTopAlbum: any = [];
 
+  searchText = new FormControl();
   @ViewChild('spotifyLogin') spotifyLogin: ElementRef;
 
   constructor(
@@ -53,6 +57,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     } else {
       this.getSpotifyProfile();
       this.getSpotifyPlaylists();
+      this.getUserTopArtist();
+      this.getUserTopTracks();
     }
   }
 
@@ -97,6 +103,20 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
+  getUserTopArtist(){
+    this._spotifyService.getUserTop('artists').pipe(takeUntil(this.toDestroy$)).subscribe((data:any)=>{
+
+      this.userTopArtist = data.items;
+    })
+  }
+
+  getUserTopTracks(){
+    this._spotifyService.getUserTop('tracks').pipe(takeUntil(this.toDestroy$)).subscribe((data:any)=>{
+
+      this.userTopAlbum = data.items;
+    })
+  }
+
   getUserPlaylist() {
     if (this.isAuthorized && this.userId != '') {
       this._spotifyService
@@ -105,6 +125,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
         .subscribe((data) => {
 
         });
+    }
+  }
+
+  search(){
+    if(this.searchText.value != '' && this.searchText.value!=null){
+      this._spotifyService.search(this.searchText.value).subscribe((data:any)=>{
+        console.log(data);
+      })
+    }
+    else{
+      alert('Search text required');
     }
   }
 

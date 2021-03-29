@@ -1,16 +1,76 @@
 <ng-container *ngIf="isAuthorized">
   <div class="ui centered grid" style="margin-top:25px;">
-    <div class="ten wide column">
+    <div class="three wide column">
+      <div class="ui segments">
+        <div class="ui segment">
+          <h4 class="ui horizontal divider header">
+            <!-- <i class="tag icon"></i> -->
+            {{profile.display_name}}'s Top Artists
+          </h4>
+
+          <div class="ui segment">
+            <div class="ui list">
+
+              <ng-container *ngFor="let artists of userTopArtist">
+
+                <div class="item">
+                  <img class="ui avatar image" [src]="artists.images[2].url">
+                  <div class="content">
+                    <a class="header">{{artists.name}}</a>
+                    <div class="description">{{artists.followers.total | number}} followers</div>
+                  </div>
+                </div>
+
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <div class="ui segment">
+
+          <h4 class="ui horizontal divider header">
+            <!-- <i class="tag icon"></i> -->
+            {{profile.display_name}}'s Top Track
+          </h4>
+          <div class="ui segment">
+            <div class="ui list">
+              <ng-container *ngFor="let track of userTopAlbum">
+
+                <div class="item">
+                  <img class="ui avatar image" [src]="track.album.images[2].url">
+                  <div class="content">
+                    <a class="header">{{track.name}}</a>
+                    <div class="description">
+                      {{track.artists[0].name}}
+                      <ng-container *ngFor="let artist of track.artists.slice(1);let i = index">
+                        (Feat. {{track.artists[i+1].name}})
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="seven wide column">
       <div class="ui segment">
-        <ng-container *ngIf="(userPlaylist | json) != '{}'">
+        <div class="ui fluid icon input">
+          <input type="text" placeholder="Search track, artists, album and playlists..." [formControl]="searchText" (keyup.Enter)="search()">
+          <i class="search icon" (click)="search()"></i>
+        </div>
+        <!-- <ng-container *ngIf="(userPlaylist | json) != '{}'">
           <h2 class="ui header">
             <img [src]="userPlaylist.images[0].url">
             <div class="content">
               {{userPlaylist.name}}
-              <div class="sub header">Created By: {{userPlaylist.owner.display_name}} | {{userPlaylist.tracks.total}} songs | <a [href]="userPlaylist.external_urls.spotify"
-                target="_blank" title="Open in Web"><i class="globe icon"></i></a>
-              <a [href]="userPlaylist.uri | sanitizer: 'resourceurl'" title="Open in Desktop App"><i
-                  class="desktop icon"></i></a>
+              <div class="sub header">Created By: {{userPlaylist.owner.display_name}} | {{userPlaylist.tracks.total}}
+                songs | <a [href]="userPlaylist.external_urls.spotify" target="_blank" title="Open in Web"><i
+                    class="globe icon"></i></a>
+                <a [href]="userPlaylist.uri | sanitizer: 'resourceurl'" title="Open in Desktop App"><i
+                    class="desktop icon"></i></a>
               </div>
             </div>
           </h2>
@@ -25,13 +85,14 @@
                     <ng-container *ngFor="let artist of tracks.track.artists.slice(1);let i = index">
                       (Feat. {{tracks.track.artists[i+1].name}})
                     </ng-container>
-                    - {{millisTominutes(tracks.track.duration_ms)}}</div>
+                    - {{millisTominutes(tracks.track.duration_ms)}}
+                  </div>
                 </div>
               </a>
             </ng-container>
 
           </div>
-        </ng-container>
+        </ng-container> -->
       </div>
     </div>
     <div class="three wide column">
@@ -53,7 +114,8 @@
               </div>
               <div class="extra content">
                 <div class="ui two buttons">
-                  <a [href]="profile.external_urls.spotify" target="_blank" class="ui basic green button">Open in Web</a>
+                  <a [href]="profile.external_urls.spotify" target="_blank" class="ui basic green button">Open in
+                    Web</a>
                   <a [href]="profile.uri| sanitizer: 'resourceurl'" class="ui basic green button">Open in Desktop</a>
                   <!-- <div class="ui basic green button">Approve</div>
                   <div class="ui basic red button">Decline</div> -->
@@ -101,4 +163,3 @@
   </div>
 
 </ng-container>
-

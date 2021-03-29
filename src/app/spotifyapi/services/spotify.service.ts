@@ -46,6 +46,26 @@ export class SpotifyService {
     });
   }
 
+  getUserTop(type: string) {
+    return this.http.get(`${environment.api}/usertop`, {
+      headers: new HttpHeaders().set(
+        'Authorization',
+        localStorage.getItem('access_token')
+      ),
+      params: new HttpParams().set('type', type),
+    });
+  }
+
+  search(searchText:string){
+    return this.http.get(`${environment.api}/searchspotify`, {
+      headers: new HttpHeaders().set(
+        'Authorization',
+        localStorage.getItem('access_token')
+      ),
+      params: new HttpParams().set('searchtext', searchText),
+    });
+  }
+
   getSpotifyAuth() {
     return this.http.get(`${environment.api}/spotifyauth`);
   }

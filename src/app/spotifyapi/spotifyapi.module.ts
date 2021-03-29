@@ -11,12 +11,15 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { CookieService } from 'ngx-cookie-service';
 import { CallbackComponent } from './callback/callback.component';
 import { SanitizerPipe } from '../sanitizer.pipe';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [ProfileComponent, CallbackComponent, SanitizerPipe],
   imports: [
     CommonModule,
     HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
     SpotifyapiRoutingModule,
     OAuthModule.forRoot()
   ],
