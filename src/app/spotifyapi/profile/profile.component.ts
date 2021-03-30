@@ -30,6 +30,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   userTopArtist: any = [];
   userTopAlbum: any = [];
 
+  searchedAlbums = [];
+  searchedArtists = [];
+  searchedPlaylists = [];
+  searchedTracks = [];
+
   searchText = new FormControl();
   @ViewChild('spotifyLogin') spotifyLogin: ElementRef;
 
@@ -82,7 +87,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
         .getSpotifyPlaylists()
         .pipe(takeUntil(this.toDestroy$))
         .subscribe((data: any) => {
-
           this.playlists = data.items;
         });
     } else {
@@ -97,24 +101,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
         .getSpotifyPlaylist(playlistId)
         .pipe(takeUntil(this.toDestroy$))
         .subscribe((data: any) => {
-
           this.userPlaylist = data;
         });
     }
   }
 
-  getUserTopArtist(){
-    this._spotifyService.getUserTop('artists').pipe(takeUntil(this.toDestroy$)).subscribe((data:any)=>{
-
-      this.userTopArtist = data.items;
-    })
+  getUserTopArtist() {
+    this._spotifyService
+      .getUserTop('artists')
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.userTopArtist = data.items;
+      });
   }
 
-  getUserTopTracks(){
-    this._spotifyService.getUserTop('tracks').pipe(takeUntil(this.toDestroy$)).subscribe((data:any)=>{
-
-      this.userTopAlbum = data.items;
-    })
+  getUserTopTracks() {
+    this._spotifyService
+      .getUserTop('tracks')
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.userTopAlbum = data.items;
+      });
   }
 
   getUserPlaylist() {
@@ -122,19 +129,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this._spotifyService
         .getUserPlaylists(this.userId)
         .pipe(takeUntil(this.toDestroy$))
-        .subscribe((data) => {
-
-        });
+        .subscribe((data) => {});
     }
   }
 
-  search(){
-    if(this.searchText.value != '' && this.searchText.value!=null){
-      this._spotifyService.search(this.searchText.value).subscribe((data:any)=>{
-        console.log(data);
-      })
-    }
-    else{
+  search() {
+    if (this.searchText.value != '' && this.searchText.value != null) {
+      this._spotifyService
+        .search(this.searchText.value)
+        .subscribe((data: any) => {
+          console.log(data);
+          this.searchedAlbums = data.albums.items;
+          this.searchedArtists = data.artists.items;
+          this.searchedPlaylists = data.playlists.items;
+          this.searchedTracks = data.tracks.items;
+        });
+    } else {
       alert('Search text required');
     }
   }
@@ -151,10 +161,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
     //this.oauthService.initLoginFlow();
   }
 
-  millisTominutes = (millis) =>{
+  millisTominutes = (millis) => {
     var minutes = Math.floor(millis / 60000);
-    var seconds = Number(((millis%60000)/1000).toFixed(0));
+    var seconds = Number(((millis % 60000) / 1000).toFixed(0));
 
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  getFeaturedArtists(artists) {
+    let featuredArtists = artists.slice(1);
+    let returnString = '';
+    for (let i = 0; i < featuredArtists.length; i++) {
+      if (i == 0) {
+        returnString += `(Feat. ${featuredArtists[i].name}`;
+      } else {
+        returnString += ` & ${featuredArtists[i].name}`;
+      }
+    }
+    if (returnString != '') returnString += ')';
+    return returnString;
   }
 }
