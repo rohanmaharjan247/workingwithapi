@@ -57,6 +57,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log(localStorage.getItem('access_token'));
     if (localStorage.getItem('access_token') == '') {
       this.isAuthorized = false;
       this.authorize();
