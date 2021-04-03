@@ -1,0 +1,86 @@
+<h4 class="ui horizontal divider header" *ngIf="recommendedTracks.length > 0">
+  <!-- <i class="tag icon"></i> -->
+  Recommended Songs
+</h4>
+<div class="ui three column grid" *ngIf="recommendedTracks.length > 0">
+  <div class="column" *ngFor="let track of recommendedTracks">
+    <div class="ui card">
+      <div class="image">
+      <img [src]="track.album.images[0].url" *ngIf="track.album.images.length>0">
+      </div>
+
+      <div class="content">
+
+        <div class="header">
+          <a [href]="track.external_urls.spotify" target="_blank">{{track.name}}</a>
+        </div>
+        <div class="meta">
+          {{track.artists[0].name}} {{getFeaturedArtists(track.artists)}}
+
+        </div>
+        <div class="description">
+          {{track.album.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<h4 class="ui horizontal divider header" *ngIf="featuredPlaylists.length > 0">
+  <!-- <i class="tag icon"></i> -->
+  Featured Playlists
+</h4>
+
+<div class="ui three column grid">
+  <div class="column" *ngFor="let featuredPlaylist of featuredPlaylists">
+    <div class="ui card">
+      <div class="image">
+        <img [src]="featuredPlaylist.images[0].url" *ngIf="featuredPlaylist.images.length > 0">
+      </div>
+      <div class="content">
+        <a class="header">{{featuredPlaylist.name}}</a>
+        <div class="meta">
+          <span class="date">{{featuredPlaylist.owner.display_name}}</span>
+        </div>
+        <div class="description">
+          {{featuredPlaylist.description}}
+        </div>
+      </div>
+      <div class="extra content">
+        <a [href]="featuredPlaylist.external_urls.spotify" target="_blank">
+          <i class="user icon"></i>
+          {{featuredPlaylist.tracks.total}} songs
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4 class="ui horizontal divider header" *ngIf="newReleases.length > 0">
+  <!-- <i class="tag icon"></i> -->
+  New Releases
+</h4>
+
+<div class="ui three column grid">
+  <div class="column" *ngFor="let newRelease of newReleases">
+    <div class="ui card">
+      <div class="image">
+        <img [src]="newRelease.images[0].url" *ngIf="newRelease.images.length > 0">
+      </div>
+      <div class="content">
+        <a class="header">{{newRelease.name}}</a>
+        <div class="meta">
+          <span class="date">{{newRelease.release_date | date: 'dd MMM, yyyy'}}</span>
+        </div>
+        <div class="description">
+          {{newRelease.artists[0].name}} {{getFeaturedArtists(newRelease.artists)}}
+        </div>
+      </div>
+      <!-- <div class="extra content">
+        <a>
+          <i class="user icon"></i>
+          22 Friends
+        </a>
+      </div> -->
+    </div>
+  </div>
+</div>

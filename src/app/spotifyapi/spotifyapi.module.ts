@@ -12,9 +12,11 @@ import { CookieService } from 'ngx-cookie-service';
 import { CallbackComponent } from './callback/callback.component';
 import { SanitizerPipe } from '../sanitizer.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowseComponent } from './browse/browse.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
-  declarations: [ProfileComponent, CallbackComponent, SanitizerPipe],
+  declarations: [ProfileComponent, CallbackComponent, SanitizerPipe, BrowseComponent, SearchComponent],
   imports: [
     CommonModule,
     HttpClientModule,

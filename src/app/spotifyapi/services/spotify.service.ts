@@ -56,13 +56,46 @@ export class SpotifyService {
     });
   }
 
-  search(searchText:string){
+  search(searchText: string) {
     return this.http.get(`${environment.api}/searchspotify`, {
       headers: new HttpHeaders().set(
         'Authorization',
         localStorage.getItem('access_token')
       ),
       params: new HttpParams().set('searchtext', searchText),
+    });
+  }
+
+  browseNewRelease(country: string) {
+    return this.http.get(`${environment.api}/browsenewrelease`, {
+      headers: new HttpHeaders().set(
+        'Authorization',
+        localStorage.getItem('access_token')
+      ),
+      params: new HttpParams().set('searchtext', country),
+    });
+  }
+
+  browseFeaturedPlaylists(country: string) {
+    return this.http.get(`${environment.api}/browsefeaturedplaylists`, {
+      headers: new HttpHeaders().set(
+        'Authorization',
+        localStorage.getItem('access_token')
+      ),
+      params: new HttpParams().set('searchtext', country),
+    });
+  }
+
+  recommendation(seedArtists, seedGenres, seedTracks) {
+    return this.http.get(`${environment.api}/recommendations`, {
+      headers: new HttpHeaders().set(
+        'Authorization',
+        localStorage.getItem('access_token')
+      ),
+      params: new HttpParams()
+        .set('seedartist', seedArtists)
+        .set('seedgenre', seedGenres)
+        .set('seedtrack', seedTracks),
     });
   }
 

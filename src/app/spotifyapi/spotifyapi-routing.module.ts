@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { BrowseComponent } from './browse/browse.component';
 import { CallbackComponent } from './callback/callback.component';
 import { ProfileComponent } from './profile/profile.component';
+import { SearchComponent } from './search/search.component';
 
 const routes: Routes = [
   {
@@ -12,11 +14,21 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
+    children: [
+      {
+        path: 'browse',
+        component: BrowseComponent,
+      },
+      {
+        path: 'search',
+        component: SearchComponent,
+      },
+    ],
   },
   {
     path: 'callback',
-    component: CallbackComponent
-  }
+    component: CallbackComponent,
+  },
 ];
 
 @NgModule({

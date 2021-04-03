@@ -47,9 +47,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private avRouter: ActivatedRoute
   ) {
     this.title.setTitle('Spotify Profile -  Working with APIs');
-    this.avRouter.queryParams.subscribe((params) => {
-      this.isAuthorized = params.isAuthorized;
-    });
+    // this.avRouter.queryParams.subscribe((params) => {
+    //   this.isAuthorized = params.isAuthorized;
+    // });
   }
   ngOnDestroy(): void {
     this.toDestroy$.next(true);
@@ -57,53 +57,48 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (!this.isAuthorized) {
+    if (localStorage.getItem('access_token') == '') {
+      this.isAuthorized = false;
       this.authorize();
     } else {
+      this.isAuthorized = true;
       this.getSpotifyProfile();
       this.getSpotifyPlaylists();
       this.getUserTopArtist();
       this.getUserTopTracks();
+
     }
+
   }
 
   getSpotifyProfile() {
-    if (this.isAuthorized)
-      this._spotifyService
-        .getSpotifyProfile()
-        .pipe(takeUntil(this.toDestroy$))
-        .subscribe((data: any) => {
-          this.profile = data;
+    this._spotifyService
+      .getSpotifyProfile()
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.profile = data;
+        this.router.navigate(['spotify/profile/browse'], {
+          queryParams: { country: data.country },
         });
-    else {
-      this.authorize();
-      alert('Please login to get spotify profile');
-    }
+      });
   }
 
   getSpotifyPlaylists() {
-    if (this.isAuthorized) {
-      this._spotifyService
-        .getSpotifyPlaylists()
-        .pipe(takeUntil(this.toDestroy$))
-        .subscribe((data: any) => {
-          this.playlists = data.items;
-        });
-    } else {
-      this.authorize();
-      alert('Please login to get spotify profile');
-    }
+    this._spotifyService
+      .getSpotifyPlaylists()
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.playlists = data.items;
+      });
   }
 
   getPlaylistById(playlistId: string) {
-    if (this.isAuthorized) {
-      this._spotifyService
-        .getSpotifyPlaylist(playlistId)
-        .pipe(takeUntil(this.toDestroy$))
-        .subscribe((data: any) => {
-          this.userPlaylist = data;
-        });
-    }
+    this._spotifyService
+      .getSpotifyPlaylist(playlistId)
+      .pipe(takeUntil(this.toDestroy$))
+      .subscribe((data: any) => {
+        this.userPlaylist = data;
+      });
   }
 
   getUserTopArtist() {

@@ -1,0 +1,92 @@
+<h4 class="ui horizontal divider header" *ngIf="searchedTracks.length > 0">
+  <!-- <i class="tag icon"></i> -->
+  Songs
+</h4>
+<!-- <div class="ui cards"> -->
+  <div class="ui three column grid" *ngIf="searchedTracks.length > 0">
+    <div class="column" *ngFor="let track of searchedTracks">
+      <div class="ui card">
+        <div class="content">
+          <img class="right floated mini ui image" [src]="track.album.images[0].url" *ngIf="track.album.images.length>0">
+          <div class="header">
+            <a [href]="track.external_urls.spotify" target="_blank">{{track.name}}</a>
+          </div>
+          <div class="meta">
+            {{track.artists[0].name}} {{getFeaturedArtists(track.artists)}}
+
+          </div>
+          <div class="description">
+            {{track.album.name}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <h4 class="ui horizontal divider header" *ngIf="searchedAlbums.length > 0">
+    <!-- <i class="tag icon"></i> -->
+    Albums
+  </h4>
+  <div class="ui three column grid" *ngIf="searchedAlbums.length > 0">
+
+      <div class="column" *ngFor="let album of searchedAlbums">
+        <div class="ui card">
+          <div class="content">
+            <img class="right floated mini ui image" [src]="album.images[0].url" *ngIf="album.images.length > 0">
+            <div class="header">
+              <a [href]="album.external_urls.spotify" target="_blank">{{album.name}}</a>
+            </div>
+            <div class="meta">
+              {{album.artists[0].name}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <h4 class="ui horizontal divider header" *ngIf="searchedArtists.length > 0">
+    <!-- <i class="tag icon"></i> -->
+    Artists
+  </h4>
+  <div class="ui three column grid" *ngIf="searchedArtists.length > 0">
+    <div class="column" *ngFor="let artist of searchedArtists">
+      <div class="ui card">
+        <div class="content">
+          <img class="right floated mini ui image" [src]="artist.images[0].url" *ngIf="artist.images.length > 0">
+          <div class="header">
+            <a [href]="artist.external_urls.spotify" target="_blank">{{artist.name}}</a>
+          </div>
+          <div class="meta">
+            {{artist.followers.total | number}} Followers
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <h4 class="ui horizontal divider header" *ngIf="searchedPlaylists.length > 0">
+    <!-- <i class="tag icon"></i> -->
+    Playlists
+  </h4>
+  <div class="ui three column grid" *ngIf="searchedPlaylists.length > 0">
+    <div class="column" *ngFor="let playlist of searchedPlaylists">
+      <div class="ui card">
+        <div class="content">
+          <img class="right floated mini ui image" [src]="playlist.images[0].url" *ngIf="playlist.images.length > 0">
+          <div class="header">
+            <a [href]="playlist.external_urls.spotify" target="_blank">{{playlist.name}}</a>
+          </div>
+          <div class="meta">
+            Created By {{playlist.owner.display_name}} |  {{playlist.tracks.total | number}} songs
+          </div>
+        </div>
+        <!-- <div class="extra content">
+          <div class="ui two buttons">
+            <div class="ui basic green button">Approve</div>
+            <div class="ui basic red button">Decline</div>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>

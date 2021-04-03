@@ -30,9 +30,10 @@ export class CallbackComponent implements OnInit {
     this._spotifyService.callback(this.code, this.state).subscribe((data: any) => {
       if (data.result) {
         localStorage.setItem('access_token', data.message);
-        this.router.navigate(['/spotify/profile'], {
-          queryParams: { isAuthorized: data.result },
-        });
+        this.router.navigate(['/spotify/profile']);
+        // , {
+        //   queryParams: { isAuthorized: data.result },
+        // }
       }
     });
   }
