@@ -2,8 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 
-const routes: Routes = [
-  { path: '', redirectTo: 'pagenotfound', pathMatch: 'full' },
+const routes: Routes = [  
   {
     path: 'weather',
     loadChildren: () =>
@@ -15,7 +14,11 @@ const routes: Routes = [
       import('./spotifyapi/spotifyapi.module').then((m) => m.SpotifyapiModule),
   },
   {
-    path: 'pagenotfound',
+    path: 'strava',
+    loadChildren: () => import('./stravaapi/stravaapi.module').then((m)=>m.StravaapiModule)
+  },
+  {
+    path: '**',
     component: PagenotfoundComponent
   }
 ];
